@@ -5,3 +5,6 @@ box_images
 config
 weights
 README.MD
+requirements.txt
+.idea
+src/__pycache__
