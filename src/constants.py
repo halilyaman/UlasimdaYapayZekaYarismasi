@@ -10,3 +10,5 @@ landing_statuses = {
     "Inilemez": "0",
     "Inis Alani Degil": "-1"
 }
+
+base_url = "http://192.168.1.10:3000"

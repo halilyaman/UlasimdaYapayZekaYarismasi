@@ -8,3 +8,4 @@ README.MD
 requirements.txt
 .idea
 src/__pycache__
+*.mp4

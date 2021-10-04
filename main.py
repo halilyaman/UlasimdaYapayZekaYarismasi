@@ -42,14 +42,43 @@ def run():
     images_folder = "./_images/"
     Path(images_folder).mkdir(parents=True, exist_ok=True)
 
+    detected_frames_file = open("detected_frames.txt", "r")
+    detected_frames = detected_frames_file.readlines()
+    detected_frames_file.close()
+
     # Run object detection model frame by frame.
     for frame in frames_json:
+        # check if this frame was detected before
+        detected = False
+        for detected_frame in detected_frames:
+            detected_frame = detected_frame[:len(detected_frame) - 1]
+            if frame['image_url'] == detected_frame:
+                detected = True
+                break
+
+        if detected:
+            print("This frame was sent before!")
+            continue
+
         # Create a prediction object to store frame info and detections
         predictions = FramePredictions(frame['url'], frame['image_url'], frame['video_name'])
         # Run detection model
         predictions = detection_model.process(predictions)
+
+        # save detected frames to txt file
+        with open("detected_frames.txt", "a") as f:
+            f.write(frame["image_url"] + "\n")
+
+        print(frame['image_url'] + " was processed.")
+
         # Send model predictions of this frame to the evaluation server
-        result = server.send_prediction(predictions)
+
+        flag = True
+        while flag:
+            result = server.send_prediction(predictions)
+            if result.status_code == 201 or result.status_code == 406:
+                flag = False
+            print(result.status_code)
 
 
 if __name__ == '__main__':

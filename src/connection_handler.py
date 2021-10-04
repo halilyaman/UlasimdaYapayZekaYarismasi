@@ -22,13 +22,15 @@ class ConnectionHandler:
         payload = {'username': username,
                    'password': password}
         files = []
-        response = requests.request("POST", self.url_login, data=payload, files=files, timeout=3)
+        response = requests.request("POST", self.url_login, data=payload, files=files)
         response_json = json.loads(response.text)
         if response.status_code == 200:
             self.auth_token = response_json['token']
             logging.info("Login Successfully Completed : {}".format(payload))
+            print("Logged In: {}".format(payload))
         else:
             logging.info("Login Failed : {}".format(response.text))
+            print("Login Failed : {}".format(response.text))
 
     def get_frames(self):
         """
@@ -42,12 +44,14 @@ class ConnectionHandler:
             'Authorization': 'Token {}'.format(self.auth_token)
         }
 
-        response = requests.request("GET", self.url_frames, headers=headers, data=payload, timeout=3)
+        response = requests.request("GET", self.url_frames, headers=headers, data=payload)
         self.frames = json.loads(response.text)
 
         if response.status_code == 200:
+            print("Successful : get_frames : {}".format(self.frames))
             logging.info("Successful : get_frames : {}".format(self.frames))
         else:
+            print("Failed : get_frames : {}".format(response.text))
             logging.info("Failed : get_frames : {}".format(response.text))
 
         return self.frames
@@ -76,7 +80,7 @@ class ConnectionHandler:
             'Authorization': 'Token {}'.format(self.auth_token),
             'Content-Type': 'application/json',
         }
-        response = requests.request("POST", self.url_prediction, headers=headers, data=payload, files=files, timeout=3)
+        response = requests.request("POST", self.url_prediction, headers=headers, data=payload, files=files)
         if response.status_code == 201:
             logging.info("Prediction send successfully. \n\t{}".format(payload))
         else:
